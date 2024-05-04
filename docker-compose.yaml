@@ -1,0 +1,34 @@
+services:
+  # Railsアプリケーション
+  api:
+    container_name: line-api
+    platform: linux/amd64
+    build:
+      context: .
+    volumes:
+      - type: bind
+        source: ./
+        target: /api
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: mysql2://root:password@db:3306/myapp_development # データベース接続情報
+
+  # MySQLデータベース
+  db:
+    image: mysql:8.0.26
+    container_name: line-api-db
+    platform: linux/amd64
+    volumes:
+      - mysqldata:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: myapp_development
+    ports:
+      - "3306:3306"
+
+volumes:
+  mysqldata:
+    driver: local
